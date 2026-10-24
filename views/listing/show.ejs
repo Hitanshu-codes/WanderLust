@@ -1,127 +1,61 @@
-<% layout("/layouts/boilerplate") %>
+<style>
+  .navbar-collapse{
+    background-color: white;
+    border-radius: 16px;
+    padding-left: 1rem;
+  }
+  .search-btn{
+    border: 1px solid ;
+    background-color: #fe424d;
+    color: #f2f2f2;
+    border-radius: 25px;
+    padding: 0 1rem 0 1rem;
+  }
 
-<div class="row mt-3">
-  <div class="card col-6 offset-3 show-card listing-card">
-    <img src="<%= listing.image.url %>" class="card-img-top show-img" alt="listing_image">
-    <div class="card-body">
-      <p class="card-text">
-        <span class="badge <%= listing.isAvailable === false ? 'bg-secondary' : 'bg-success' %>">
-          <%= listing.isAvailable === false ? 'Unavailable' : 'Available' %>
-        </span>
-      </p>
-      <p class="card-text">Owned By- <i><%= listing.owner.username %></i></p>
-      <p class="card-text"><%= listing.description %></p>
-      <p class="card-text"><% if (typeof listing.price === "number") { %>
-        &#8377;<%= listing.price.toLocaleString("en-IN") %>/night
-      <% } else { %>
-        <span class="text-muted">Price not available</span>
-      <% } %></p>
+  .search-btn:hover{
+    border: 1px solid #212529;
+    background-color: #fe424d;
+    color: #f2f2f2;
+  }
+  .search-btn i{
+    display: inline;
+    margin-right: 0.5rem;
+  }
 
-      <p class="card-text"><%= listing.location %></p>
-      <p class="card-text"><%= listing.country %></p>
+  .search-input{
+    border-radius: 25px;
+    padding: 0.5rem 3rem 0.5rem 3rem;
+    font-size: 1rem;
+  }
+</style>
+
+<nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/listings"><i class="fa-duotone fa-solid fa-map-pin"></i></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav">
+        <a class="nav-link" href="/listings">Explore</a>
+      </div>
+      <div class="navbar-nav ms-auto">
+        <form class="d-flex" role="search" action="/listings" method="GET">
+          <input class="form-control me-2 search-input" type="search" name="search" placeholder="Search destinations" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" />
+          <button class="btn search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i>Search</button>
+        </form>
+      </div>
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="/listings/new">Airbnb your home</a>
+
+        <% if(!currUser) {%>
+        <a class="nav-link" href="/signup"><b>Sign Up</b></a>
+        <a class="nav-link" href="/login"><b>Log In</b></a>
+        <% } %>
+        <% if(currUser) {%>
+        <a class="nav-link" href="/logout"><b>Log Out</b></a>
+        <% } %>
+      </div>
     </div>
   </div>
-</div>
-
-<% if (listing.isAvailable === false) { %>
-  <div class="col-8 offset-3 mb-4 mt-4">
-    <h4>Request this listing</h4>
-    <form action="/listings/<%= listing._id %>/leads" method="POST" class="needs-validation" novalidate>
-      <div class="mb-3">
-        <label for="lead-name" class="form-label">Name</label>
-        <input id="lead-name" type="text" name="lead[name]" class="form-control" required>
-      </div>
-      <div class="mb-3">
-        <label for="lead-email" class="form-label">Email</label>
-        <input id="lead-email" type="email" name="lead[email]" class="form-control" required>
-      </div>
-      <div class="mb-3">
-        <label for="lead-phone" class="form-label">Phone</label>
-        <input id="lead-phone" type="text" name="lead[phone]" class="form-control">
-      </div>
-      <div class="mb-3">
-        <label for="lead-message" class="form-label">Message</label>
-        <textarea id="lead-message" name="lead[message]" rows="4" class="form-control" required></textarea>
-      </div>
-      <button class="btn btn-outline-dark">Send Interest</button>
-    </form>
-  </div>
-<% } %>
-
-<% if(currUser && listing.owner._id.equals(currUser._id)) {%>
-  <div class="btns col-8 offset-1">
-    <a href="/listings/<%= listing._id %>/edit" class="btn btn-dark offset-3 edit-btn">Edit </a>
-
-    <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE">
-      <button class="btn btn-dark offset-4">Delete</button>
-    </form>
-  </div>
-  <hr class="col-8 offset-3">
-<% } %>
-
-<div class="col-8 offset-3 mb-3">
-  <% if(currUser) {%>
-  <h4>Leave a Review</h4>
-  <form action="/listings/<%= listing._id %>/reviews" method="POST" class="needs-validation" novalidate>
-    <div class="mb-3 mt-3">
-      <label for="rating" class="form-label">Rating</label>
-      <fieldset class="starability-coinFlip">
-        <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked aria-label="No rating." />
-        <input type="radio" id="first-rate1" name="review[rating]" value="1" />
-        <label for="first-rate1" title="Terrible">1 star</label>
-        <input type="radio" id="first-rate2" name="review[rating]" value="2" />
-        <label for="first-rate2" title="Not good">2 stars</label>
-        <input type="radio" id="first-rate3" name="review[rating]" value="3" />
-        <label for="first-rate3" title="Average">3 stars</label>
-        <input type="radio" id="first-rate4" name="review[rating]" value="4" />
-        <label for="first-rate4" title="Very good">4 stars</label>
-        <input type="radio" id="first-rate5" name="review[rating]" value="5" />
-        <label for="first-rate5" title="Amazing">5 stars</label>
-      </fieldset>
-    </div>
-
-    <div class="mb-3 mt-3">
-      <label for="comment" class="form-label">Comments</label>
-      <textarea name="review[comment]" id="comment" cols="30" rows="5" placeholder="Leave a Review" class="form-control" required></textarea>
-      <div class="invalid-feedback">Please add some text for review</div>
-    </div>
-    <br>
-    <button class="btn btn-outline-dark mb-3">Submit</button>
-  </form>
-
-  <% } %>
-  <hr>
-
-  <% if(listing.reviews.length > 0)  { %>
-    <div class="row">
-      <p><b>All Reviews</b></p>
-      <% for(review of listing.reviews) {%>
-        <div class="card col-5 ms-3 mb-3">
-          <div class="card-body">
-            <p class="cart-title"><b>Review by- </b><i>@<%= review.author.username %></i></p>
-            <p class="starability-result card-text" data-rating="<%= review.rating %>"></p>
-            <p class="card-text"><%= review.comment %></p>
-          </div>
-          <% if(currUser && review.author.equals(currUser._id)) {%>
-            <form method="post" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
-              <button class="btn btn-danger mb-3 mt-4 btn-sm">Delete review</button>
-            </form>
-          <% } %>
-        </div>
-      <% } %>
-    </div>
-    <hr>
-  <% } %>
-</div>
-<div class="col-8 offset-3 mb-3">
-  <h3>Where you'll be </h3>
-  <div id="map" class="card-img-top"></div>
-</div>
-
-<script>
-  const GEOAPIFY_KEY = "<%= GEOAPIFY_KEY %>";
-  const listingCoords =  <%-JSON.stringify(listing.geometry.coordinates) %>;
-  const listingLoc = "<%= listing.location %>";
-  const listingTitle = "<%= listing.title %>"
-</script>
-<script type= "module" src="/js/map.js"></script>
+</nav>

@@ -3,20 +3,18 @@
 <div class="container mt-4">
   <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
     <% if (allListing.length === 0) { %>
-      <div class="alert alert-warning" role="alert">
-        No matching listing was found for "<%= searchQuery %>". We have saved your request and will notify you when a relevant listing is added.
-      </div>
+      <p class="text-muted mb-3">
+        No listing found for "<%= searchQuery %>". We will notify you when a matching listing is added.
+      </p>
     <% } else { %>
-      <div class="alert alert-success" role="alert">
-        Showing results for "<%= searchQuery %>".
-      </div>
+      <p class="text-muted mb-3">Showing results for "<%= searchQuery %>".</p>
     <% } %>
   <% } %>
 
-  <div class="row row-cols-lg-3 row-cols-md-3 row-cols-sm-1 mt-5">
+  <div class="row row-cols-lg-3 row-cols-md-3 row-cols-sm-1 mt-3">
     <% for(let listing of allListing) { %>
-      <a href="/listings/<%= listing._id  %>" class="listing-links">
-        <div class="card col listing-card" >
+      <a href="/listings/<%= listing._id %>" class="listing-links">
+        <div class="card col listing-card">
           <img src="<%= listing.image.url %>" class="card-img-top" alt="listing_image" style="height: 20rem">
           <div class="card-img-overlay"></div>
           <div class="card-body">
@@ -28,7 +26,6 @@
               <br>
               <% if (typeof listing.price === "number") { %>
                 &#8377;<%= listing.price.toLocaleString("en-IN") %>/night
-                <i class="tax-info"> &nbsp; &nbsp; +18% GST</i>
               <% } %>
             </p>
           </div>
@@ -37,20 +34,3 @@
     <% } %>
   </div>
 </div>
-
-<script>
-  let priceToggle = document.getElementById("switchCheckDefault")
-  if (priceToggle) {
-    priceToggle.addEventListener("click", () => {
-      let taxInfo = document.getElementsByClassName("tax-info");
-
-      for (let info of taxInfo) {
-        if (info.style.display != "inline") {
-          info.style.display = "inline";
-        } else {
-          info.style.display = "none";
-        }
-      }
-    })
-  }
-</script>
