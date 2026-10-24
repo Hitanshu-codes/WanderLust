@@ -1,6 +1,5 @@
 <style>
   .navbar-collapse{
-    
     background-color: white;
     border-radius: 16px;
     padding-left: 1rem;
@@ -17,7 +16,6 @@
     border: 1px solid #212529;
     background-color: #fe424d;
     color: #f2f2f2;
-    
   }
   .search-btn i{
     display: inline;
@@ -28,10 +26,8 @@
     border-radius: 25px;
     padding: 0.5rem 3rem 0.5rem 3rem;
     font-size: 1rem;
-
   }
 </style>
-
 
 <nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
   <div class="container-fluid">
@@ -44,10 +40,10 @@
         <a class="nav-link" href="/listings">Explore</a>
       </div>
       <div class="navbar-nav ms-auto">
-        <form class="d-flex" role="search">
-        <input class="form-control me-2 search-input" type="search" placeholder="Search destinations" />
-        <button class="btn search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i>Search</button>
-      </form>
+        <form class="d-flex" role="search" action="/listings" method="GET">
+          <input class="form-control me-2 search-input" type="search" name="search" placeholder="Search destinations" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" />
+          <button class="btn search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i>Search</button>
+        </form>
       </div>
       <div class="navbar-nav ms-auto">
         <a class="nav-link" href="/listings/new">Airbnb your home</a>
@@ -59,7 +55,7 @@
         <% if(currUser) {%>
         <a class="nav-link" href="/logout"><b>Log Out</b></a>
         <% } %>
-      </div>      
+      </div>
     </div>
   </div>
 </nav>

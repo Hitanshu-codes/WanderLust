@@ -1,192 +1,56 @@
 <% layout("/layouts/boilerplate") %>
-    
 
-<style>
-  .filters-wrapper {
-      display: flex;
-      flex-wrap: wrap;
-  }
-  .hello{
-     display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-
-  }
-
-  .filter {
-      text-align: center;
-      margin-right: 2rem;
-      margin-top: 2rem;
-      opacity: 0.7;
-  }
-
-  .filter:hover {
-      opacity: 1;
-      cursor: pointer;
-      text-decoration: underline;
-  }
-
-  .filter{
-      font-size: 0.8rem;
-      margin-top: 0.3rem;
-  }
-
-  #toggle {
-      margin-top: 1rem;
-      border: 1px solid black;
-      height: 3rem;
-      border-radius: 10px;
-      padding: 2rem 1rem 1rem 1rem;
-      margin-left: 5rem;
-      display: flex;
-      align-items: center;
-    }
-
-  #toggle p,input{
-    cursor: pointer;
-  }
-
-  
-
-  .tax-info{
-    display: none;
-    
-  }
-</style>
-
-<div class="container">
-
-  <!-- Button + Toggle -->
-  <div class="d-flex align-items-center gap-4 hello">
-    <a class="btn btn-outline-dark mt-3"
-       data-bs-toggle="collapse"
-       href="#collapseExample"
-       role="button"
-       aria-expanded="false"
-       aria-controls="collapseExample">
-       <i class="fa-solid fa-filter"></i> Filters
-    </a>
-
-    <div id="toggle" class="ms-auto btn btn-outline-dark">
-      <div class="form-check form-check-reverse form-switch">
-        <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
-        <label class="form-check-label" for="switchCheckDefault">
-          <p>Price with Taxes</p>
-        </label>
+<div class="container mt-4">
+  <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
+    <% if (allListing.length === 0) { %>
+      <div class="alert alert-warning" role="alert">
+        No matching listing was found for "<%= searchQuery %>". We have saved your request and will notify you when a relevant listing is added.
       </div>
-    </div>
+    <% } else { %>
+      <div class="alert alert-success" role="alert">
+        Showing results for "<%= searchQuery %>".
+      </div>
+    <% } %>
+  <% } %>
+
+  <div class="row row-cols-lg-3 row-cols-md-3 row-cols-sm-1 mt-5">
+    <% for(let listing of allListing) { %>
+      <a href="/listings/<%= listing._id  %>" class="listing-links">
+        <div class="card col listing-card" >
+          <img src="<%= listing.image.url %>" class="card-img-top" alt="listing_image" style="height: 20rem">
+          <div class="card-img-overlay"></div>
+          <div class="card-body">
+            <p class="card-text">
+              <b><%= listing.title %></b>
+              <span class="badge <%= listing.isAvailable === false ? 'bg-secondary' : 'bg-success' %> ms-2">
+                <%= listing.isAvailable === false ? 'Unavailable' : 'Available' %>
+              </span>
+              <br>
+              <% if (typeof listing.price === "number") { %>
+                &#8377;<%= listing.price.toLocaleString("en-IN") %>/night
+                <i class="tax-info"> &nbsp; &nbsp; +18% GST</i>
+              <% } %>
+            </p>
+          </div>
+        </div>
+      </a>
+    <% } %>
   </div>
-
-  <!-- COLLAPSE -->
-  <div class="collapse mt-3" id="collapseExample">
-    <div class="filters-wrapper">
-
-      <div class="filter card-body">
-        <i class="fa-solid fa-fire"></i>
-        <p>Trending</p>
-      </div>
-
-      <div class="filter card-body">
-        <i class="fa-solid fa-bed"></i>
-        <p>Rooms</p>
-      </div>
-
-      <div class="filter card-body">
-        <i class="fa-solid fa-mountain-city"></i>
-        <p>Iconic Cities</p>
-      </div>
-
-      <div class="filter card-body">
-        <i class="fa-solid fa-mountain"></i>
-        <p>Mountains</p>
-      </div>
-
-      <div class="filter card-body">
-        <i class="fa-solid fa-water"></i>
-        <p>Lakefront</p>
-      </div>
-
-      <div class="filter card-body">
-        <i class="fa-solid fa-water-ladder"></i>
-        <p>Amazing Pools</p>
-      </div>
-
-      <div class="filter card-body">
-        <i class="fa-solid fa-binoculars"></i>
-        <p>Amazing Views</p>
-      </div>
-
-      <div class="filter card-body">
-        <i class="fa-solid fa-umbrella-beach"></i>
-        <p>Beach</p>
-      </div>
-
-      <div class="filter card-body">
-        <i class="fa-brands fa-fort-awesome"></i>
-        <p>Castles</p>
-      </div>
-
-      <div class="filter card-body">
-        <i class="fa-solid fa-house-chimney"></i>
-        <p>Cabin</p>
-      </div>
-
-      <div class="filter card-body">
-        <i class="fa-solid fa-campground"></i>
-        <p>Camp</p>
-      </div>
-
-      <div class="filter card-body">
-        <i class="fa-solid fa-tractor"></i>
-        <p>Farms</p>
-      </div>
-
-      <div class="filter card-body">
-        <i class="fa-solid fa-snowman"></i>
-        <p>Snow</p>
-      </div>
-
-    </div>
-  </div>
-
 </div>
-    
 
-    <div class="row row-cols-lg-3 row-cols-md-3 row-cols-sm-1 mt-5">
-        
-            <% for(let listing of allListing) { %>
-            <a href="/listings/<%= listing._id  %>" class="listing-links">
-            <div class="card col listing-card" >
-                <img src="<%= listing.image.url %>" class="card-img-top" alt="listing_image" style="height: 20rem">
-                <div class="card-img-overlay"></div>
-                <div class="card-body">
-                    <p class="card-text"><b><%= listing.title %></b>
-                    <br>
-                    <% if (typeof listing.price === "number") { %>
-                            &#8377;<%= listing.price.toLocaleString("en-IN") %>/night
-                            <i class="tax-info"> &nbsp; &nbsp; +18% GST</i>
+<script>
+  let priceToggle = document.getElementById("switchCheckDefault")
+  if (priceToggle) {
+    priceToggle.addEventListener("click", () => {
+      let taxInfo = document.getElementsByClassName("tax-info");
 
-                    <% } %>
-                    </p>
-                </div>
-            
-            </div>
-        </a>
-     <% } %> 
-    </div>
-
-
-<script> 
-    let priceToggle = document.getElementById("switchCheckDefault")
-    priceToggle.addEventListener("click",()=>{
-        let taxInfo = document.getElementsByClassName("tax-info");
-
-        for(info of taxInfo){
-            if(info.style.display != "inline"){
-                info.style.display= "inline"
-            }else{
-                info.style.display= "none"
-            }
+      for (let info of taxInfo) {
+        if (info.style.display != "inline") {
+          info.style.display = "inline";
+        } else {
+          info.style.display = "none";
         }
+      }
     })
+  }
 </script>
