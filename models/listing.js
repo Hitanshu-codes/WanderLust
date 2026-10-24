@@ -25,16 +25,24 @@ const listingSchema = new Schema({
   },
   location: String,
   country: String,
+  isAvailable: {
+    type: Boolean,
+    default: true,
+  },
+  leads: [{
+    type: Schema.Types.ObjectId,
+    ref: "Lead",
+  }],
 
   reviews: [{
     type: Schema.Types.ObjectId,
     ref:"Review"
- }],
- owner :{
+  }],
+  owner :{
   type : Schema.Types.ObjectId,
   ref : "User"
- },
- geometry: {
+  },
+  geometry: {
   type: {
     type: String,
     enum: ["Point"],
@@ -49,11 +57,11 @@ const listingSchema = new Schema({
 });
 
 listingSchema.post("findOneAndDelete", async (listing)=>{
-
+ 
   if(listing){
     await Review.deleteMany({_id: {$in:listing.reviews}});
   }
-  
+   
 })
 
 const Listing = mongoose.model("Listing", listingSchema);

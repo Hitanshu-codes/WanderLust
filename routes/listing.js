@@ -3,7 +3,7 @@ import wrapAsync from "../utils/wrapAsync.js";
 import Listing from "../models/listing.js";
 import Review from "../models/review.js";
 import {validateListing, isLoggedin, isOwner } from "../middleware.js";
-import {create, index, newRoute, showListing, edit, update, deleteRoute} from "../controllers/listings.js";
+import {create, index, newRoute, showListing, edit, update, deleteRoute, createLead} from "../controllers/listings.js";
 import multer from "multer";
 
 
@@ -21,6 +21,8 @@ router
 
 //new route
 router.get("/new", isLoggedin, wrapAsync(newRoute))
+
+router.post("/:id/leads", wrapAsync(createLead));
 
 
 

@@ -1,4 +1,5 @@
 import Listing from "../models/listing.js";
+import Lead from "../models/lead.js";
 
 const index = async (req, res) => {
   const allListing = await Listing.find({});
@@ -34,6 +35,7 @@ const create = async (req,res, next)=>{
   newListing.owner = req.user._id;
   newListing.image = {url, filename}
   newListing.geometry = {type: "Point", coordinates};
+  newListing.isAvailable = req.body.listing.isAvailable === "true" || req.body.listing.isAvailable === true;
   let geotude=await newListing.save();
   console.log(geotude)
   req.flash("success", "Listing created successfully!")
@@ -49,7 +51,7 @@ const showListing = async (req,res)=>{
     req.flash("error", "Listing does not exist")
     return res.redirect("/listings")
     }
-    res.render("listing/show.ejs",{listing});
+    res.render("listing/show.ejs", {listing});
 }
 
 
@@ -63,7 +65,7 @@ const edit = async (req,res)=>{
   }
   let originalImage = listing.image.url;
   let originalImageUrl = originalImage.replace("/upload", "/upload/w_250")
-  res.render("listing/edit.ejs",{listing, originalImageUrl})
+  res.render("listing/edit.ejs", {listing, originalImageUrl})
 }
 
 
@@ -83,12 +85,13 @@ const update = async (req,res)=>{
     return res.redirect(`/listings/${id}/edit`);
   }
 
-  // attach geometry to update payload
-  req.body.listing.geometry = {
+  const updatePayload = { ...req.body.listing };
+  updatePayload.geometry = {
     type: "Point",
     coordinates: geoData.features[0].geometry.coordinates
   };
-  let listing = await Listing.findByIdAndUpdate(id,{...req.body.listing});
+  updatePayload.isAvailable = req.body.listing.isAvailable === "true" || req.body.listing.isAvailable === true;
+  let listing = await Listing.findByIdAndUpdate(id, updatePayload);
 
   if(typeof req.file !== "undefined"){
   let url = req.file.path;
@@ -111,6 +114,35 @@ const deleteRoute = async (req,res)=>{
   res.redirect("/listings")
 }
 
+const createLead = async (req, res) => {
+  const { id } = req.params;
+  const listing = await Listing.findById(id);
+
+  if (!listing) {
+    req.flash("error", "Listing not found.");
+    return res.redirect("/listings");
+  }
+
+  const { name, email, phone, message } = req.body.lead || req.body;
+
+  if (!name || !email || !message) {
+    req.flash("error", "Please fill in your name, email, and message.");
+    return res.redirect(`/listings/${id}`);
+  }
+
+  const lead = new Lead({
+    listing: listing._id,
+    name,
+    email,
+    phone: phone || "",
+    message,
+  });
+
+  await lead.save();
+  req.flash("success", "Thanks! We have captured your interest for this listing.");
+  return res.redirect(`/listings/${id}`);
+};
 
 
-export {index, newRoute, create, showListing, edit, update, deleteRoute}
+
+export {index, newRoute, create, showListing, edit, update, deleteRoute, createLead}
